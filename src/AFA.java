@@ -150,4 +150,42 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         return state_space;
     }
 
+
+    public void convertToSingleInitialState(){
+        if(getInit_states().size() == 1)
+            return;
+
+        Set<StateCore> initial_states = getInit_states();
+
+        Iterator<StateCore> iter = initial_states.iterator();
+        StateCore first = iter.next();
+        Map<Alphabet, Set<Set<StateCore>>> first_trans = getTrans().get(first);
+
+        StateCore new_state = generateUniqueStateCore();
+        Map<Alphabet, Set<Set<StateCore>>> new_state_map = new HashMap<>();
+
+        //copy the transitions of the first state of the disjunction to the new state
+        for(Alphabet letter : first_trans.keySet()){
+            Set<Set<StateCore>> new_state_letter_map = new HashSet<>();
+            for(Set<StateCore> set : first_trans.get(letter)){
+                new_state_letter_map.add(new HashSet<>(set));
+            }
+            new_state_map.put(letter, new_state_letter_map);
+        }
+
+        //merge the other states of the disjunction
+        while (iter.hasNext()) {
+            StateCore state = iter.next();
+            Map<Alphabet, Set<Set<StateCore>>> state_trans = getTrans().get(state);
+
+            for (Alphabet letter : state_trans.keySet()) {
+                Set<Set<StateCore>> state_letter_tran = state_trans.get(letter);
+                Set<Set<StateCore>> new_state_letter_tran = new_state_map.get(letter);
+                if (new_state_letter_tran == null) {
+                    new_state_letter_tran = new HashSet<>();
+                    new_state_map.put(letter, new_state_letter_tran);
+                }
+                new_state_letter_tran.addAll(state_letter_tran);
+            }
+        }
 }
