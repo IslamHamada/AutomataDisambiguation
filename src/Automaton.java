@@ -15,10 +15,11 @@ public abstract class Automaton<StateCore, Alphabet, TransitionOutput, InputStat
 
     private Set<InputStateCore> in_init_states;
 
-    private Set<StateCore> states;
     // TODO: 11.12.2020 might need to create a new generic type for the state core of the input automaton instead of using InputTranKey
     private Map<InputStateCore, Map<Alphabet, InputTranOutput>> in_trans;
     private Set<InputStateCore> in_acc_states;
+
+    private Set<StateCore> state_space;
 
     public Map<StateCore, Map<Alphabet, TransitionOutput>> getTrans() {
         return trans;
