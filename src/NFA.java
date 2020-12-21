@@ -106,26 +106,21 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
 
     public Queue<StateCore> expandBackwards(StateCore s){
         Queue<StateCore> queue = new LinkedList<>();
-        Set<StateCore> expanded = new HashSet<>();
         for(Alphabet c : getAlphabet()) {
             StateCore computed_state = expandBackwardsFunction.apply(s, c, getIn_trans());
-            expanded.add(s);
             if (computed_state != null) {
-//                for (StateCore s2 : in_states) {
-//                    Set<StateCore> out_state = new HashSet<StateCore>(Arrays.asList(s));
-                    Map<Alphabet, Set<StateCore>> state_map = getTrans().get(computed_state);
-                    if(state_map == null){
-                        state_map = new HashMap<>();
-                        trans.put(computed_state, state_map);
-                    }
-                    Set<StateCore> state_letter_map = getTrans().get(computed_state).get(c);
-                    if(state_letter_map == null){
-                        state_letter_map = new HashSet<>();
-                        state_map.put(c, state_letter_map);
-                    }
-                    state_letter_map.add(s);
-                    queue.add(computed_state);
-//                }
+                Map<Alphabet, Set<StateCore>> state_map = getTrans().get(computed_state);
+                if(state_map == null){
+                    state_map = new HashMap<>();
+                    trans.put(computed_state, state_map);
+                }
+                Set<StateCore> state_letter_map = getTrans().get(computed_state).get(c);
+                if(state_letter_map == null){
+                    state_letter_map = new HashSet<>();
+                    state_map.put(c, state_letter_map);
+                }
+                state_letter_map.add(s);
+                queue.add(computed_state);
             }
         }
         return queue;
