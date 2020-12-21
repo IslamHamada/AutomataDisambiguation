@@ -120,18 +120,12 @@ public abstract class Automaton<StateCore, Alphabet, TransitionOutput, InputStat
         return isAcceptState;
     }
 
-    public boolean isInitialState(StateCore s){
-        boolean isInitialState =  isInitialStateFunction.apply(getIn_init_states(), s);
-        if(isInitialState)
-            init_states.add(s);
-        return isInitialState;
-    }
-
+    public abstract boolean isInitialState(StateCore s);
 
     // TODO: might implement these two functions here instead of implementing them in the subclasses
     public abstract void expandForward();
     public abstract void expandBackwards();
-    public abstract Queue<TransitionOutput> expandForward(StateCore s);
+    public abstract Queue<StateCore> expandForward(StateCore s);
     public abstract Queue<StateCore> expandBackwards(StateCore s);
 
     @Override

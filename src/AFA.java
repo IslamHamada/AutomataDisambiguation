@@ -1,12 +1,26 @@
-import javax.swing.plaf.nimbus.State;
 import java.util.*;
 
 public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         > extends Automaton<StateCore, Alphabet, Set<Set<StateCore>>, InputStateCore, InputTransitionOutput>{
-
+    Set<StateCore> init_states;
 
     public AFA(Set<StateCore> init_states, Set<Alphabet> alphabet, Set<StateCore> acc_states, Map<StateCore, Map<Alphabet, Set<Set<StateCore>>>> trans) {
-        super(init_states, alphabet, acc_states, trans);
+        super(alphabet, acc_states, trans);
+        this.init_states = init_states;
+    }
+
+    public Set<StateCore> getInit_states() {
+        return init_states;
+    }
+
+    public void setInit_states(Set<StateCore> init_states) {
+        this.init_states = init_states;
+    }
+
+    @Override
+    public String toString(){
+        return "Automaton{\n" +
+                "init_states=" + init_states + super.toString();
     }
 
     @Override
@@ -44,7 +58,7 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
     }
 
     @Override
-    public Queue<Set<Set<StateCore>>> expandForward(StateCore s) {
+    public Queue<StateCore> expandForward(StateCore s) {
         return null;
     }
 
