@@ -256,6 +256,42 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         }
         return output;
     }
+    public NFA forwardAlternationRemoval(){
+
+        Set<Set<StateCore>> init_states = new HashSet<>(Arrays.asList(getInit_states()));
+        Set<Alphabet> alphabet = getAlphabet();
+        Map<Set<StateCore>, Map<Alphabet, Set<Set<StateCore>>>> trans_map = new HashMap<>();
+
+        ExpandFunction<Set<StateCore>, Alphabet, Map<StateCore, Map<Alphabet, Set<Set<StateCore>>>>, Set<Set<StateCore>>> AFAtoNFAExpand = (state, letter, in_tran) -> {
+            Set<Set<StateCore>> conTranFunc = configTranFunction(state, letter, in_tran);
+            if(conTranFunc == null)
+                return null;
+            Set<Set<StateCore>> outputState = new HashSet<>(conTranFunc);
+
+            for(Set<StateCore> set : conTranFunc){
+                for(Set<StateCore> set2: conTranFunc){
+                    if(set.containsAll(set2) && set.size() > set2.size())
+                        outputState.remove(set);
+                }
+            }
+
+            if(!outputState.isEmpty())
+                return outputState;
+            else
+                return null;
+        };
+
+        HasPropertyFunction<StateCore, Set<StateCore>> AFAToNFAIsAcceptStateFunction = (inAccStates, state) -> {
+            if(inAccStates.containsAll(state))
+                    return true;
+            return false;
+        };
+
+        NFA A_out = new NFA(init_states, alphabet, AFAtoNFAExpand, AFAToNFAIsAcceptStateFunction, getTrans(), getAcc_states());
+        A_out.expandForward();
+
+        return A_out;
+    }
     public static <StateCore, Alphabet> Set<Set<StateCore>> configTranFunction(Set<StateCore> setOfStates, Alphabet letter, Map<StateCore, Map<Alphabet, Set<Set<StateCore>>>> trans) {
         List<List<Set<StateCore>>> listOfLists = new ArrayList<>();
         for(StateCore s: setOfStates){
