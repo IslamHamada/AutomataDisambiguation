@@ -1,7 +1,7 @@
 import java.lang.reflect.Array;
 import java.util.*;
 
-public class AFAToNFATest {
+public class AFAToNFAReverseAlternationTest {
 
     public static void main(String[] args) {
         Set<Character> init_states = new HashSet<>();
