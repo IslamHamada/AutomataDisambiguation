@@ -102,6 +102,17 @@ public abstract class Automaton<StateCore, Alphabet, TransitionOutput, InputStat
         this.in_init_states = in_init_states;
     }
 
+    public Set<StateCore> getState_space() {
+        state_space =  calcStateSpace();
+        return state_space;
+    }
+
+    protected abstract Set<StateCore> calcStateSpace();
+
+    public void setState_space(Set<StateCore> state_space) {
+        this.state_space = state_space;
+    }
+
     public boolean isAcceptState(StateCore s){
         boolean isAcceptState =  isAcceptStateFunction.apply(getIn_acc_states(), s);
         if(isAcceptState)
