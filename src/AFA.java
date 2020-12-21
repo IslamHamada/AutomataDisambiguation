@@ -131,4 +131,23 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
 
         return A_out;
     }
+
+    @Override
+    public Set<StateCore> calcStateSpace(){
+        Set<StateCore> state_space = new HashSet<>();
+        for(StateCore state : init_states){
+            state_space.add(state);
+        }
+
+        for(StateCore state : trans.keySet()){
+            for(Alphabet letter : trans.get(state).keySet()){
+                for(Set<StateCore> set : trans.get(state).get(letter)){
+                    state_space.addAll(set);
+                }
+            }
+        }
+
+        return state_space;
+    }
+
 }
