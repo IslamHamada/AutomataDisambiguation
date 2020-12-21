@@ -188,4 +188,40 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
                 new_state_letter_tran.addAll(state_letter_tran);
             }
         }
+    public static <StateCore, Alphabet> Set<Set<StateCore>> configTranFunction(Set<StateCore> setOfStates, Alphabet letter, Map<StateCore, Map<Alphabet, Set<Set<StateCore>>>> trans) {
+        List<List<Set<StateCore>>> listOfLists = new ArrayList<>();
+        for(StateCore s: setOfStates){
+            Set<Set<StateCore>> state_letter_set = trans.get(s).get(letter);
+            if(state_letter_set == null)
+                return null;
+            List<Set<StateCore>> state_letter_list = new ArrayList<>(state_letter_set);
+            listOfLists.add(state_letter_list);
+        }
+
+        int numOfLists = listOfLists.size();
+        int[] indices = new int[numOfLists];
+        Set<Set<StateCore>> output = new HashSet<>();
+
+        boolean found = true;
+        while(found){
+            Set<StateCore> set = new HashSet<>();
+            for(int i = 0; i < numOfLists; i++){
+                set.addAll(listOfLists.get(i).get(indices[i]));
+            }
+            output.add(set);
+
+            found = false;
+
+            //update the indices
+            for(int i = numOfLists - 1; i >= 0 && !found; i--){
+                indices[i]++;
+                if(indices[i] >= listOfLists.get(i).size()) {
+                    indices[i] = 0;
+                } else {
+                    found = true;
+                }
+            }
+        }
+        return output;
+    }
 }
