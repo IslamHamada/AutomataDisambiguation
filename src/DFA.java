@@ -1,20 +1,52 @@
 import java.util.*;
 
 public class DFA<StateCore, Alphabet, InputTranKey, InputTranValue> extends Automaton<StateCore, Alphabet, StateCore, InputTranKey, InputTranValue>{
+    StateCore init_state;
 
     public DFA(StateCore init_state, Set<Alphabet> alphabet, ExpandFunction<StateCore, Alphabet, Map<InputTranKey, Map<Alphabet, InputTranValue>>, StateCore> expandFunction, HasPropertyFunction<InputTranKey, StateCore> isAcceptStateFunction, Map<InputTranKey, Map<Alphabet, InputTranValue>> in_trans, Set<InputTranKey> in_acc_states) {
-        super(new HashSet<StateCore>(Arrays.asList(init_state)), alphabet, expandFunction, isAcceptStateFunction, in_trans, in_acc_states);
+        super(alphabet, expandFunction, isAcceptStateFunction, in_trans, in_acc_states);
+        this.init_state = init_state;
     }
 
-    public StateCore getInit_state(){
-        return getInit_states().iterator().next();
+    public StateCore getInit_state() {
+        return init_state;
+    }
+
+    public void setInit_state(StateCore init_state) {
+        this.init_state = init_state;
+    }
+
+
+    @Override
+    public String toString(){
+        return "Automaton{\n" +
+                "init_states=" + init_state + super.toString();
+    }
+
+    @Override
+    protected Set<StateCore> calcStateSpace() {
+        Set<StateCore> state_space = new HashSet<>();
+        state_space.add(init_state);
+
+        for(StateCore state : trans.keySet()){
+            for(Alphabet letter : trans.get(state).keySet()){
+                state_space.add(trans.get(state).get(letter));
+            }
+        }
+
+        return state_space;
+    }
+
+    @Override
+    public boolean isInitialState(StateCore s) {
+        return false;
     }
 
     @Override
     public void expandForward() {
         Queue<StateCore> queue = new LinkedList<StateCore>();
         Set<StateCore> expanded = new HashSet<StateCore>();
-        queue.addAll(getInit_states());
+        queue.add(init_state);
         while(!queue.isEmpty()){
             StateCore s = queue.remove();
             if(!expanded.contains(s)) {

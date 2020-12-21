@@ -2,22 +2,91 @@ import java.util.*;
 
 public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends Automaton<StateCore, Alphabet, Set<StateCore>, InputStateCore, InputTranOutput>{
 
+    Set<StateCore> init_states;
+
     public NFA(Set<StateCore> init_states, Set<Alphabet> alphabet, Set<StateCore> acc_states, Map<StateCore, Map<Alphabet, Set<StateCore>>> trans) {
-        super(init_states, alphabet, acc_states, trans);
+        super(alphabet, acc_states, trans);
+        this.init_states = init_states;
     }
 
 
     public NFA(Set<Alphabet> alphabet, Set<StateCore> acc_states, ExpandFunction<StateCore, Alphabet, Map<InputStateCore, Map<Alphabet, InputTranOutput>>, StateCore> expandBackwardsFunction, HasPropertyFunction<InputStateCore, StateCore> isInitialStateFunction, Set<InputStateCore> in_init_states, Map<InputStateCore, Map<Alphabet, InputTranOutput>> in_trans) {
         super(alphabet, acc_states, expandBackwardsFunction, isInitialStateFunction, in_init_states, in_trans);
+        init_states = new HashSet<>();
+    }
+
+    public NFA(Set<StateCore> init_states, Set<Alphabet> alphabet, ExpandFunction<StateCore, Alphabet, Map<InputStateCore, Map<Alphabet, InputTranOutput>>, Set<StateCore>> expandForwardFunction, HasPropertyFunction<InputStateCore, StateCore> isAcceptStateFunction, Map<InputStateCore, Map<Alphabet, InputTranOutput>> in_trans, Set<InputStateCore> in_acc_states) {
+        super(alphabet, expandForwardFunction, isAcceptStateFunction, in_trans, in_acc_states);
+        this.init_states = init_states;
+    }
+
+    @Override
+    public String toString(){
+        return "Automaton{\n" +
+                "init_states=" + init_states + super.toString();
+    }
+
+    @Override
+    protected Set<StateCore> calcStateSpace() {
+        Set<StateCore> state_space = new HashSet<>();
+        state_space.addAll(init_states);
+
+        for(StateCore state : trans.keySet()){
+            for(Alphabet letter : trans.get(state).keySet()){
+                state_space.addAll(trans.get(state).get(letter));
+            }
+        }
+
+        return state_space;
+    }
+
+
+    public Set<StateCore> getInit_states() {
+        return init_states;
+    }
+
+    public void setInit_states(Set<StateCore> init_states) {
+        this.init_states = init_states;
+    }
+
+    @Override
+    public boolean isInitialState(StateCore s) {
+        boolean isInitialState =  isInitialStateFunction.apply(getIn_init_states(), s);
+        if(isInitialState)
+            init_states.add(s);
+        return isInitialState;
     }
 
     @Override
     public void expandForward() {
+        Queue<StateCore> queue = new LinkedList<StateCore>();
+        Set<StateCore> expanded = new HashSet<StateCore>();
+        queue.addAll(getInit_states());
+        while(!queue.isEmpty()){
+            StateCore s = queue.remove();
+            if(!expanded.contains(s)) {
+                queue.addAll(expandForward(s));
+                isAcceptState(s);
+            }
+            expanded.add(s);
+        }
     }
 
     @Override
-    public Queue<Set<StateCore>> expandForward(StateCore s) {
-        return null;
+    public Queue<StateCore> expandForward(StateCore s) {
+        System.out.println(s);
+        Queue<StateCore> queue = new LinkedList<>();
+        HashMap<Alphabet, Set<StateCore>> state_map = new HashMap<>();
+        for(Alphabet c : getAlphabet()){
+            Set<StateCore> out = expandForwardFunction.apply(s, c, getIn_trans());
+            if(out != null) {
+                state_map.put(c, out);
+                queue.addAll(out);
+            }
+        }
+        if(!state_map.isEmpty())
+            getTrans().put(s,state_map);
+        return queue;
     }
 
     @Override

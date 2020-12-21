@@ -1,7 +1,6 @@
 import java.util.*;
 
 public abstract class Automaton<StateCore, Alphabet, TransitionOutput, InputStateCore, InputTranOutput>{
-    Set<StateCore> init_states;
     Set<Alphabet> alphabet;
     Set<StateCore> acc_states;
     Map<StateCore, Map<Alphabet, TransitionOutput>> trans;
@@ -33,11 +32,10 @@ public abstract class Automaton<StateCore, Alphabet, TransitionOutput, InputStat
 
     }
 
-    public Automaton(Set<StateCore> init_states, Set<Alphabet> alphabet, ExpandFunction<StateCore, Alphabet, Map<InputStateCore, Map<Alphabet, InputTranOutput>>, TransitionOutput> expandFunction, HasPropertyFunction<InputStateCore, StateCore> isAcceptStateFunction, Map<InputStateCore, Map<Alphabet, InputTranOutput>> in_trans, Set<InputStateCore> in_acc_states) {
+    public Automaton(Set<Alphabet> alphabet, ExpandFunction<StateCore, Alphabet, Map<InputStateCore, Map<Alphabet, InputTranOutput>>, TransitionOutput> expandFunction, HasPropertyFunction<InputStateCore, StateCore> isAcceptStateFunction, Map<InputStateCore, Map<Alphabet, InputTranOutput>> in_trans, Set<InputStateCore> in_acc_states) {
         trans = new HashMap<>();
         acc_states = new HashSet<>();
 
-        this.init_states = init_states;
         this.alphabet = alphabet;
         this.expandForwardFunction = expandFunction;
         this.isAcceptStateFunction = isAcceptStateFunction;
@@ -47,7 +45,6 @@ public abstract class Automaton<StateCore, Alphabet, TransitionOutput, InputStat
 
     public Automaton(Set<Alphabet> alphabet, Set<StateCore> acc_states, ExpandFunction<StateCore, Alphabet, Map<InputStateCore, Map<Alphabet, InputTranOutput>>, StateCore> expandBackwardsFunction, HasPropertyFunction<InputStateCore, StateCore> isInitialStateFunction, Set<InputStateCore> in_init_states, Map<InputStateCore, Map<Alphabet, InputTranOutput>> in_trans) {
         trans = new HashMap<>();
-        init_states = new HashSet<>();
 
         this.acc_states = acc_states;
         this.alphabet = alphabet;
@@ -57,20 +54,20 @@ public abstract class Automaton<StateCore, Alphabet, TransitionOutput, InputStat
         this.in_init_states = in_init_states;
     }
 
-    public Automaton(Set<StateCore> init_states, Set<Alphabet> alphabet, Set<StateCore>acc_states, Map<StateCore, Map<Alphabet, TransitionOutput>> trans){
-        this.init_states = init_states;
+    public Automaton(Set<Alphabet> alphabet, Set<StateCore>acc_states, Map<StateCore, Map<Alphabet, TransitionOutput>> trans){
+//        this.init_states = init_states;
         this.acc_states = acc_states;
         this.alphabet = alphabet;
         this.trans = trans;
     }
 
-    public Set<StateCore> getInit_states() {
-        return init_states;
-    }
+//    public Set<StateCore> getInit_states() {
+//        return init_states;
+//    }
 
-    public void setInit_states(Set<StateCore> init_states) {
-        this.init_states = init_states;
-    }
+//    public void setInit_states(Set<StateCore> init_states) {
+//        this.init_states = init_states;
+//    }
 
     public Set<StateCore> getAcc_states() {
         return acc_states;
@@ -127,9 +124,7 @@ public abstract class Automaton<StateCore, Alphabet, TransitionOutput, InputStat
 
     @Override
     public String toString() {
-        return "Automaton{\n" +
-                "init_states=" + init_states +
-                "\n, alphabet=" + alphabet +
+         return "\n, alphabet=" + alphabet +
                 "\n, acc_states=" + acc_states +
                 "\n, trans=" + trans +
                 "\n}";
