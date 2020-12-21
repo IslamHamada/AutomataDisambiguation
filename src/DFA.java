@@ -60,11 +60,9 @@ public class DFA<StateCore, Alphabet, InputTranKey, InputTranValue> extends Auto
     @Override
     public Queue<StateCore> expandForward(StateCore s){
         Queue<StateCore> queue = new LinkedList<>();
-        Set<StateCore> expanded = new HashSet<>();
         HashMap<Alphabet, StateCore> state_map = new HashMap<>();
         for(Alphabet c : getAlphabet()){
             StateCore out = expandForwardFunction.apply(s, c, getIn_trans());
-            expanded.add(s);
             if(out != null) {
                 state_map.put(c, out);
                 queue.add(out);
