@@ -194,6 +194,16 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
                 new_state_letter_tran.addAll(state_letter_tran);
             }
         }
+
+        //ToDo: remove the intermediate new states in initial_states2. some of them won't ever be mentioned while expanding
+
+        getState_space().add(new_state);
+        getTrans().put(new_state, new_state_map);
+        Set<StateCore> new_initial_state = new HashSet<>();
+        new_initial_state.add(new_state);
+        setInit_states(new_initial_state);
+    }
+
     public AFA complement(){
         convertToSingleInitialState();
         complete_aut();
