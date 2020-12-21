@@ -49,6 +49,32 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
     }
 
     @Override
+    public void complete_aut() {
+        Set<StateCore> reachable = get_reachable();
+        StateCore deadState = generateUniqueStateCore();
+        Map<Alphabet, Set<Set<StateCore>>> deadState_map = new HashMap<>();
+        for(Alphabet letter : getAlphabet()){
+            deadState_map.put(letter, new HashSet<>(Arrays.asList(new HashSet<>(Arrays.asList(deadState)))));
+        }
+        trans.put(deadState, deadState_map);
+        getState_space().add(deadState);
+
+        for(StateCore s : reachable){
+            Map<Alphabet, Set<Set<StateCore>>> state_map = trans.get(s);
+            if(state_map == null){
+                state_map = new HashMap<>();
+                trans.put(s, state_map);
+            }
+            for(Alphabet letter : getAlphabet()){
+                Set<Set<StateCore>> state_letter_set = trans.get(s).get(letter);
+                if(state_letter_set == null){
+                    state_letter_set = new HashSet<>(Arrays.asList(new HashSet<>(Arrays.asList(deadState))));
+                    trans.get(s).put(letter, state_letter_set);
+                }
+            }
+        }
+    }
+    @Override
     public void expandForward() {
     }
 
