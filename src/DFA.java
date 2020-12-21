@@ -81,6 +81,30 @@ public class DFA<StateCore, Alphabet, InputTranKey, InputTranValue> extends Auto
     }
 
     @Override
+    public Set<StateCore> get_reachable() {
+        Set<StateCore> reachable = new HashSet<>();
+
+        Queue<StateCore> queue = new LinkedList<>();
+        queue.add(init_state);
+
+        while(!queue.isEmpty()){
+            StateCore state = queue.remove();
+            reachable.add(state);
+            for(Alphabet letter : trans.get(state).keySet()){
+                StateCore state2 = trans.get(state).get(letter);
+                if(!reachable.contains(state2))
+                    queue.add(state2);
+            }
+        }
+        return reachable;
+    }
+
+    @Override
+    public void complete_aut() {
+
+    }
+
+    @Override
     public void expandBackwards() {
 
     }

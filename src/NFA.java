@@ -131,6 +131,33 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
         return queue;
     }
 
+    @Override
+    public Set<StateCore> get_reachable() {
+        Set<StateCore> reachable = new HashSet<>();
+
+        Queue<StateCore> queue = new LinkedList<>();
+        for(StateCore state : init_states){
+            queue.add(state);
+        }
+
+        while(!queue.isEmpty()){
+            StateCore state = queue.remove();
+            reachable.add(state);
+            for(Alphabet letter : trans.get(state).keySet()){
+                for(StateCore state2 : trans.get(state).get(letter)){
+                    if(!reachable.contains(state2))
+                        queue.add(state2);
+                }
+            }
+        }
+        return reachable;
+    }
+
+    @Override
+    public void complete_aut() {
+
+    }
+
     public DFA determinize(){
         Set<StateCore> init_state = getInit_states();
         Set<Alphabet> alphabet = getAlphabet();

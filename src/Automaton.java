@@ -137,4 +137,33 @@ public abstract class Automaton<StateCore, Alphabet, TransitionOutput, InputStat
     public void setIn_trans(Map<InputStateCore, Map<Alphabet, InputTranOutput>> in_trans) {
         this.in_trans = in_trans;
     }
+
+    public abstract Set<StateCore> get_reachable();
+
+    public abstract void complete_aut();
+
+    public StateCore generateUniqueStateCore(){
+        Set<StateCore> state_space = getState_space();
+        StateCore state = state_space.iterator().next();
+        String class_name = state.getClass().getSimpleName();
+        if(class_name.equals("Integer")){
+            int max = 0;
+            for(StateCore s : state_space){
+                Integer s2 = (Integer)s;
+                max = (s2 > max)? s2 : max;
+            }
+            StateCore new_value = (StateCore)(Integer)(max + 1);
+            return new_value;
+        } else if(class_name.equals("Character")){
+            int max = 0;
+            for(StateCore s : state_space){
+                Character s2 = (Character)s;
+                int s3 = s2.charValue();
+                max = (s2 > max)? s2 : max;
+            }
+            StateCore new_value = (StateCore)(Character)(char)(max + 1);
+            return new_value;
+        }
+        return null;
+    }
 }

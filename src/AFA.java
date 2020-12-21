@@ -10,6 +10,31 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
     }
 
     @Override
+    public Set<StateCore> get_reachable() {
+        //ToDo: can be more strict. because the universal branching can cause clashses
+        Set<StateCore> reachable = new HashSet<>();
+
+        Queue<StateCore> queue = new LinkedList<>();
+        for(StateCore s : init_states){
+            queue.add(s);
+        }
+
+        while(!queue.isEmpty()){
+            StateCore state = queue.remove();
+            reachable.add(state);
+            for(Alphabet letter : trans.get(state).keySet()){
+                for(Set<StateCore> set : trans.get(state).get(letter)){
+                    for(StateCore s : set){
+                        if(!reachable.contains(s))
+                            queue.add(s);
+                    }
+                }
+            }
+        }
+        return reachable;
+    }
+
+    @Override
     public void expandForward() {
     }
 
