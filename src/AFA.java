@@ -188,6 +188,58 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
                 new_state_letter_tran.addAll(state_letter_tran);
             }
         }
+    public AFA complement(){
+        convertToSingleInitialState();
+        complete_aut();
+
+        Map<StateCore, Map<Alphabet, Set<Set<StateCore>>>> trans_map = new HashMap<>();
+
+        for(StateCore s : trans.keySet()){
+            Map<Alphabet, Set<Set<StateCore>>> state_map = new HashMap<>();
+            for(Alphabet letter : trans.get(s).keySet()){
+                Set<Set<StateCore>> sets = trans.get(s).get(letter);
+                List<List<StateCore>> listOfLists = new ArrayList<>();
+                for(Set<StateCore> set : sets)
+                    listOfLists.add(new ArrayList<>(set));
+                Set<Set<StateCore>> state_letter_set = new HashSet<>(allSelections(listOfLists));
+                state_map.put(letter, state_letter_set);
+            }
+            trans_map.put(s, state_map);
+        }
+
+        Set<StateCore> acc_states = new HashSet<>(getState_space());
+        acc_states.removeAll(getAcc_states());
+        AFA output = new AFA(init_states, alphabet, acc_states, trans_map);
+        return output;
+    }
+
+    public List<Set<StateCore>> allSelections(List<List<StateCore>> listOfLists) {
+        int numOfLists = listOfLists.size();
+        int[] indices = new int[numOfLists];
+        List<Set<StateCore>> output = new ArrayList<>();
+
+        boolean found = true;
+        while(found){
+            Set<StateCore> set = new HashSet<>();
+            for(int i = 0; i < numOfLists; i++){
+                set.add(listOfLists.get(i).get(indices[i]));
+            }
+            output.add(set);
+
+            found = false;
+
+            //update the indices
+            for(int i = numOfLists - 1; i >= 0 && !found; i--){
+                indices[i]++;
+                if(indices[i] >= listOfLists.get(i).size()) {
+                    indices[i] = 0;
+                } else {
+                    found = true;
+                }
+            }
+        }
+        return output;
+    }
     public static <StateCore, Alphabet> Set<Set<StateCore>> configTranFunction(Set<StateCore> setOfStates, Alphabet letter, Map<StateCore, Map<Alphabet, Set<Set<StateCore>>>> trans) {
         List<List<Set<StateCore>>> listOfLists = new ArrayList<>();
         for(StateCore s: setOfStates){
