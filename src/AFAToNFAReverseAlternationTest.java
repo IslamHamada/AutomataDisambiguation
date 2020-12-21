@@ -4,7 +4,9 @@ import java.util.*;
 public class AFAToNFATest {
 
     public static void main(String[] args) {
-        HashSet<Character> init_states = new HashSet<>(Arrays.asList('q'));
+        Set<Character> init_states = new HashSet<>();
+        init_states.add('q');
+
         HashSet<Character> alphabet = new HashSet<>(Arrays.asList('a','b'));
         HashSet<Character> acc_states = new HashSet<>(Arrays.asList('q', 's'));
         Map<Character, Map<Character, Set<Set<Character>>>> trans = new HashMap<>();
