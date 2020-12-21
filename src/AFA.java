@@ -74,6 +74,12 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
             }
         }
     }
+
+    @Override
+    public boolean isInitialState(StateCore s) {
+        return false;
+    }
+
     @Override
     public void expandForward() {
     }
