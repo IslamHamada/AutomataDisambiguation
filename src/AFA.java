@@ -292,6 +292,7 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
 
         return A_out;
     }
+
     public static <StateCore, Alphabet> Set<Set<StateCore>> configTranFunction(Set<StateCore> setOfStates, Alphabet letter, Map<StateCore, Map<Alphabet, Set<Set<StateCore>>>> trans) {
         List<List<Set<StateCore>>> listOfLists = new ArrayList<>();
         for(StateCore s: setOfStates){
