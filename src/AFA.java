@@ -101,8 +101,8 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
     }
 
     public NFA reverseDeterminize(){
-        Set<Set<StateCore>> acc_states = new HashSet<Set<StateCore>>();
-        Set<StateCore> acc_state = new HashSet<StateCore>(getAcc_states());
+        Set<Set<StateCore>> acc_states = new HashSet<>();
+        Set<StateCore> acc_state = new HashSet<>(getAcc_states());
         acc_states.add(acc_state);
 
         Set<Alphabet> alphabet = getAlphabet();
@@ -147,9 +147,12 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         }
 
         for(StateCore state : trans.keySet()){
-            for(Alphabet letter : trans.get(state).keySet()){
-                for(Set<StateCore> set : trans.get(state).get(letter)){
-                    state_space.addAll(set);
+            Map<Alphabet, Set<Set<StateCore>>> trans_state_map = trans.get(state);
+            if(trans_state_map != null) {
+                for (Alphabet letter : trans_state_map.keySet()) {
+                    for (Set<StateCore> set : trans.get(state).get(letter)) {
+                        state_space.addAll(set);
+                    }
                 }
             }
         }
@@ -157,6 +160,116 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         return state_space;
     }
 
+    //Todo: the function elimintates the disjunction in the initial state. Time to eliminate the conjunction
+    //Todo: make sure to write a comprehensive test
+//    public void convertToSingleInitialState(){
+//        if(getInit_states().size() == 1 && getInit_states().iterator().next().size() == 1)
+//            return;
+//
+//        Set<StateCore> initial_states = getInit_states();
+//
+//        Set<Set<StateCore>> initial_states = getInit_states();
+//
+//        Set<Set<StateCore>> initial_states2 = new HashSet<>();
+////        a loop to merge the states of each conjunction into one single state
+//        for (Set<StateCore> conjunction : initial_states) {
+//            StateCore new_state = generateUniqueStateCore();
+//            if (conjunction.size() > 1) {
+//                Iterator<StateCore> iter = conjunction.iterator();
+//                StateCore first = iter.next();
+//                Map<Alphabet, Set<Set<StateCore>>> first_trans = getTrans().get(first);
+//                if(first_trans == null)
+//                    continue;
+//                Map<Alphabet, Set<Set<StateCore>>> new_state_map = new HashMap<>();
+//
+////                copy the transitions of the first state of the conjunction to the new state
+//                for(Alphabet letter : first_trans.keySet()){
+//                    Set<Set<StateCore>> new_state_letter_map = new HashSet<>();
+//                    for(Set<StateCore> set : first_trans.get(letter)){
+//                        new_state_letter_map.add(new HashSet<>(set));
+//                    }
+//                    new_state_map.put(letter, new_state_letter_map);
+//                }
+//
+////                merge the other states of the conjunction in the new state
+//                while (iter.hasNext()) {
+//                    StateCore state = iter.next();
+//                    Map<Alphabet, Set<Set<StateCore>>> state_trans = getTrans().get(state);
+//
+////                    merge for each letter
+//                    for (Alphabet letter : state_trans.keySet()) {
+//                        Set<Set<StateCore>> state_letter_tran = state_trans.get(letter);
+//                        Set<Set<StateCore>> new_state_letter_tran = new_state_map.get(letter);
+//
+//                        if (new_state_letter_tran == null)
+//                            continue;
+//
+//                        Set<Set<StateCore>> new_tran = new HashSet<>();
+//                        for (Set<StateCore> s1 : state_letter_tran) {
+//                            for (Set<StateCore> s2 : new_state_letter_tran) {
+//                                Set<StateCore> s3 = new HashSet<>(s1);
+//                                s3.addAll(s2);
+//                                new_tran.add(s3);
+//                            }
+//                        }
+//                        new_state_map.remove(letter);
+//                        new_state_map.put(letter, new_tran);
+//                    }
+//
+//                    //remove state map if it has no transitions for any of the letters
+//                    boolean remove_state_trans = new_state_map.keySet().size() == 0;
+//                    if(!remove_state_trans) {
+//                        getState_space().add(new_state);
+//                        getTrans().put(new_state, new_state_map);
+//                        initial_states2.add(new HashSet<>(Arrays.asList(new_state)));
+//
+//                    }
+//                }
+//            } else {
+//                initial_states2.add(conjunction);
+//            }
+//        }
+//
+//        Iterator<Set<StateCore>> iter = initial_states2.iterator();
+//        StateCore first = iter.next().iterator().next();
+//        Map<Alphabet, Set<Set<StateCore>>> first_trans = getTrans().get(first);
+//
+//        StateCore new_state = generateUniqueStateCore();
+//        Map<Alphabet, Set<Set<StateCore>>> new_state_map = new HashMap<>();
+//
+//        //copy the transitions of the first state of the disjunction to the new state
+//        for(Alphabet letter : first_trans.keySet()){
+//            Set<Set<StateCore>> new_state_letter_map = new HashSet<>();
+//            for(Set<StateCore> set : first_trans.get(letter)){
+//                new_state_letter_map.add(new HashSet<>(set));
+//            }
+//            new_state_map.put(letter, new_state_letter_map);
+//        }
+//
+//        //merge the other states of the disjunction
+//        while (iter.hasNext()) {
+//            StateCore state = iter.next().iterator().next();
+//            Map<Alphabet, Set<Set<StateCore>>> state_trans = getTrans().get(state);
+//
+//            for (Alphabet letter : state_trans.keySet()) {
+//                Set<Set<StateCore>> state_letter_tran = state_trans.get(letter);
+//                Set<Set<StateCore>> new_state_letter_tran = new_state_map.get(letter);
+//                if (new_state_letter_tran == null) {
+//                    new_state_letter_tran = new HashSet<>();
+//                    new_state_map.put(letter, new_state_letter_tran);
+//                }
+//                new_state_letter_tran.addAll(state_letter_tran);
+//            }
+//        }
+//
+//        //ToDo: remove the intermediate new states in initial_states2. some of them won't ever be mentioned while expanding
+//
+//        getState_space().add(new_state);
+//        getTrans().put(new_state, new_state_map);
+//        Set<Set<StateCore>> new_initial_state = new HashSet<>();
+//        new_initial_state.add(new HashSet<>(Arrays.asList(new_state)));
+//        setInit_states(new_initial_state);
+//    }
 
     public void convertToSingleInitialState(){
         if(getInit_states().size() == 1)
@@ -208,6 +321,7 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
     public AFA complement(){
         convertToSingleInitialState();
         complete_aut();
+//        System.out.println(this);
 
         Map<StateCore, Map<Alphabet, Set<Set<StateCore>>>> trans_map = new HashMap<>();
 
@@ -227,6 +341,9 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         Set<StateCore> acc_states = new HashSet<>(getState_space());
         acc_states.removeAll(getAcc_states());
         AFA output = new AFA(init_states, alphabet, acc_states, trans_map);
+
+//        Map<StateCore, StateCore> replace_state_cores;
+        this.complement = output;
         return output;
     }
 
