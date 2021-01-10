@@ -88,8 +88,9 @@ public class DFA<StateCore, Alphabet, InputTranKey, InputTranValue> extends Auto
         while(!queue.isEmpty()){
             StateCore state = queue.remove();
             reachable.add(state);
-            for(Alphabet letter : trans.get(state).keySet()){
-                StateCore state2 = trans.get(state).get(letter);
+            Map<Alphabet, StateCore> state_map = trans.get(state);
+            for(Alphabet letter : state_map.keySet()){
+                StateCore state2 = state_map.get(letter);
                 if(!reachable.contains(state2))
                     queue.add(state2);
             }
