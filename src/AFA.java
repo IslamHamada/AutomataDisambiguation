@@ -3,6 +3,7 @@ import java.util.*;
 public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         > extends Automaton<StateCore, Alphabet, Set<Set<StateCore>>, InputStateCore, InputTransitionOutput>{
     Set<StateCore> init_states;
+    AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput> complement;
 
     public AFA(Set<StateCore> init_states, Set<Alphabet> alphabet, Set<StateCore> acc_states, Map<StateCore, Map<Alphabet, Set<Set<StateCore>>>> trans) {
         super(alphabet, acc_states, trans);
