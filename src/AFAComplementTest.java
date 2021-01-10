@@ -2,8 +2,8 @@ import java.util.*;
 
 public class AFAComplementTest {
     public static void main(String[] args) {
-        HashSet<Set<Character>> init_states = new HashSet<>();
-        init_states.add(new HashSet<>(Arrays.asList('q')));
+        HashSet<Character> init_states = new HashSet<>();
+        init_states.add('q');
 
         HashSet<Character> alphabet = new HashSet<>(Arrays.asList('a','b'));
         HashSet<Character> acc_states = new HashSet<>(Arrays.asList('q', 's'));
