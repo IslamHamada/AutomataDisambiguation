@@ -103,7 +103,9 @@ public abstract class Automaton<StateCore, Alphabet, TransitionOutput, InputStat
     }
 
     public Set<StateCore> getState_space() {
-        state_space =  calcStateSpace();
+        if(state_space == null) {
+            state_space = calcStateSpace();
+        }
         return state_space;
     }
 
@@ -144,7 +146,7 @@ public abstract class Automaton<StateCore, Alphabet, TransitionOutput, InputStat
         this.in_trans = in_trans;
     }
 
-    public abstract Set<StateCore> get_reachable();
+    public abstract Set<StateCore> get_reachable_states();
 
     public abstract void complete_aut();
 
@@ -159,6 +161,7 @@ public abstract class Automaton<StateCore, Alphabet, TransitionOutput, InputStat
                 max = (s2 > max)? s2 : max;
             }
             StateCore new_value = (StateCore)(Integer)(max + 1);
+            state_space.add(new_value);
             return new_value;
         } else if(class_name.equals("Character")){
             int max = 0;
@@ -168,6 +171,7 @@ public abstract class Automaton<StateCore, Alphabet, TransitionOutput, InputStat
                 max = (s2 > max)? s2 : max;
             }
             StateCore new_value = (StateCore)(Character)(char)(max + 1);
+            state_space.add(new_value);
             return new_value;
         }
         return null;
