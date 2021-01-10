@@ -127,21 +127,22 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
     }
 
     @Override
-    public Set<StateCore> get_reachable() {
+    public Set<StateCore> get_reachable_states() {
         Set<StateCore> reachable = new HashSet<>();
 
         Queue<StateCore> queue = new LinkedList<>();
-        for(StateCore state : init_states){
-            queue.add(state);
-        }
+        queue.addAll(getInit_states());
 
         while(!queue.isEmpty()){
             StateCore state = queue.remove();
             reachable.add(state);
-            for(Alphabet letter : trans.get(state).keySet()){
-                for(StateCore state2 : trans.get(state).get(letter)){
-                    if(!reachable.contains(state2))
-                        queue.add(state2);
+            Map<Alphabet, Set<StateCore>> state_map = trans.get(state);
+            if(state_map != null){
+                for(Alphabet letter : state_map.keySet()){
+                    for(StateCore state2 : state_map.get(letter)){
+                        if(!reachable.contains(state2))
+                            queue.add(state2);
+                    }
                 }
             }
         }

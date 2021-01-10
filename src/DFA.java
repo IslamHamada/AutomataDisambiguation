@@ -79,7 +79,7 @@ public class DFA<StateCore, Alphabet, InputTranKey, InputTranValue> extends Auto
     }
 
     @Override
-    public Set<StateCore> get_reachable() {
+    public Set<StateCore> get_reachable_states() {
         Set<StateCore> reachable = new HashSet<>();
 
         Queue<StateCore> queue = new LinkedList<>();

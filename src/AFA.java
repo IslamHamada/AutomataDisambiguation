@@ -25,23 +25,23 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
     }
 
     @Override
-    public Set<StateCore> get_reachable() {
+    public Set<StateCore> get_reachable_states() {
         //ToDo: can be more strict. because the universal branching can cause clashses
         Set<StateCore> reachable = new HashSet<>();
 
-        Queue<StateCore> queue = new LinkedList<>();
-        for(StateCore s : init_states){
-            queue.add(s);
-        }
+        Queue<StateCore> queue = new LinkedList<>(init_states);
 
         while(!queue.isEmpty()){
             StateCore state = queue.remove();
             reachable.add(state);
-            for(Alphabet letter : trans.get(state).keySet()){
-                for(Set<StateCore> set : trans.get(state).get(letter)){
-                    for(StateCore s : set){
-                        if(!reachable.contains(s))
-                            queue.add(s);
+            Map<Alphabet, Set<Set<StateCore>>> state_map = trans.get(state);
+            if(state_map != null) {
+                for (Alphabet letter : state_map.keySet()) {
+                    for (Set<StateCore> set : state_map.get(letter)) {
+                        for (StateCore s : set) {
+                            if (!reachable.contains(s))
+                                queue.add(s);
+                        }
                     }
                 }
             }
@@ -51,7 +51,7 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
 
     @Override
     public void complete_aut() {
-        Set<StateCore> reachable = get_reachable();
+        Set<StateCore> reachable = get_reachable_states();
         StateCore deadState = generateUniqueStateCore();
         Map<Alphabet, Set<Set<StateCore>>> deadState_map = new HashMap<>();
         for(Alphabet letter : getAlphabet()){
