@@ -218,4 +218,14 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
             return out_states;
         };
 
+        HasPropertyFunction<StateCore, Pair<StateCore>> NfaToSelfProductIsAcceptStateFunction = (inAccStates, state) -> {
+            StateCore left = state.getLeft();
+            StateCore right = state.getRight();
+            return inAccStates.contains(left) && inAccStates.contains(right);
+        };
+
+        NFA product = new NFA(out_init_states, getAlphabet(), expand_product, NfaToSelfProductIsAcceptStateFunction, getTrans(), getAcc_states());
+        product.expandForward();
+        return product;
+    }
 }
