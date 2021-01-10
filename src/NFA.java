@@ -74,7 +74,6 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
 
     @Override
     public Queue<StateCore> expandForward(StateCore s) {
-        System.out.println(s);
         Queue<StateCore> queue = new LinkedList<>();
         HashMap<Alphabet, Set<StateCore>> state_map = new HashMap<>();
         for(Alphabet c : getAlphabet()){
