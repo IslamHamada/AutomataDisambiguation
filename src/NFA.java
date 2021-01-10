@@ -228,4 +228,45 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
         product.expandForward();
         return product;
     }
+    public Set<StateCore> get_states_that_can_lead_to_acceptance(){
+        Set<StateCore> states_accessible_from_initial_states = new HashSet<>(get_reachable_states());
+
+        Map<StateCore, Map<Alphabet, Set<StateCore>>> trans_reverse = new HashMap<>();
+        for(StateCore s : getTrans().keySet()){
+            for(Alphabet letter : getTrans().get(s).keySet()){
+                for(StateCore s2 : getTrans().get(s).get(letter)){
+                    Map<Alphabet, Set<StateCore>> current_state_map = trans_reverse.get(s2);
+                    if(current_state_map == null){
+                        current_state_map = new HashMap<>();
+                        trans_reverse.put(s2, current_state_map);
+                    }
+                    Set<StateCore> current_state_letter_set = current_state_map.get(letter);
+                    if(current_state_letter_set == null){
+                        current_state_letter_set = new HashSet<>();
+                        current_state_map.put(letter, current_state_letter_set);
+                    }
+                    current_state_letter_set.add(s);
+                }
+            }
+        }
+
+        Set<StateCore> states_accessible_from_acc_states = new HashSet<>();
+        Queue<StateCore> queue2 = new LinkedList<>(getAcc_states());
+        while (!queue2.isEmpty()){
+            StateCore head = queue2.remove();
+            if(states_accessible_from_acc_states.contains(head))
+                continue;
+            states_accessible_from_acc_states.add(head);
+            Map<Alphabet, Set<StateCore>> state_map = trans_reverse.get(head);
+            if(state_map != null){
+                for(Alphabet letter : state_map.keySet()){
+                    queue2.addAll(state_map.get(letter));
+                }
+            }
+        }
+
+        states_accessible_from_initial_states.retainAll(states_accessible_from_acc_states);
+        return states_accessible_from_initial_states;
+    }
+    
 }
