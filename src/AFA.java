@@ -257,11 +257,130 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         }
         return output;
     }
+
+    public void disambiguateByComplement(){
+        Map<StateCore, StateCore> comAut_to_Aut = new HashMap<>();
+        if(this.complement == null)
+            this.complement = this.complement();
+
+        //merge the automata and its complement
+        Set<StateCore> comStateSpace = this.complement.getState_space();
+        for(StateCore s : comStateSpace) {
+            StateCore new_state = generateUniqueStateCore();
+            comAut_to_Aut.put(s, new_state);
+            comAut_to_Aut.put(s, new_state);
+        }
+
+        for(StateCore s : comStateSpace){
+            StateCore new_state = comAut_to_Aut.get(s);
+            comAut_to_Aut.put(s, new_state);
+            Map<Alphabet, Set<Set<StateCore>>> state_map = new HashMap<>();
+            for(Alphabet letter: this.complement.getTrans().get(s).keySet()){
+                Set<Set<StateCore>> state_letter_sets = new HashSet<>();
+                for(Set<StateCore> set : this.complement.getTrans().get(s).get(letter)){
+                    Set<StateCore> state_letter_set = new HashSet<>();
+                    for(StateCore s2 : set)
+                        state_letter_set.add(comAut_to_Aut.get(s2));
+                    state_letter_sets.add(state_letter_set);
+                }
+                state_map.put(letter, state_letter_sets);
+            }
+            this.getTrans().put(new_state, state_map);
+        }
+
+        for(StateCore s : this.complement.getAcc_states()){
+            this.getAcc_states().add(comAut_to_Aut.get(s));
+        }
+
+        boolean ambiguous = true;
+        boolean state_found = false;
+        while(ambiguous){
+            System.out.println("================================================");
+            System.out.println(comAut_to_Aut);
+            System.out.println(this);
+
+            state_found = false;
+            ambiguous = false;
+            NFA<Set<StateCore>, Alphabet, StateCore, Set<StateCore>> nfa = forwardAlternationRemoval();
+            System.out.println(nfa);
+            NFA<Pair<Set<StateCore>>, Alphabet, Set<StateCore>, Set<Set<StateCore>>> self_product = nfa.self_product();
+            System.out.println(self_product);
+            Set<Pair<Set<StateCore>>> states_that_lead_to_accpetance = self_product.get_states_that_can_lead_to_acceptance();
+
+            //remove states that accept the empty language (Trim)
+            Iterator<Pair<Set<StateCore>>> iter = self_product.getInit_states().iterator();
+            while(iter.hasNext()){
+                if(!states_that_lead_to_accpetance.contains(iter.next()))
+                    iter.remove();
+            }
+
+            Iterator<Map.Entry<Pair<Set<StateCore>>, Map<Alphabet, Set<Pair<Set<StateCore>>>>>> iter2 = self_product.getTrans().entrySet().iterator();
+            while(iter2.hasNext()){
+                Map.Entry<Pair<Set<StateCore>>, Map<Alphabet, Set<Pair<Set<StateCore>>>>> entry = iter2.next();
+                Pair<Set<StateCore>> state = entry.getKey();
+                if(!states_that_lead_to_accpetance.contains(state)) {
+                    iter2.remove();
+                    continue;
+                }
+
+                Iterator<Map.Entry<Alphabet, Set<Pair<Set<StateCore>>>>> iter3 = entry.getValue().entrySet().iterator();
+                while(iter3.hasNext()){
+                    Map.Entry<Alphabet, Set<Pair<Set<StateCore>>>> entry2 = iter3.next();
+                    Set<Pair<Set<StateCore>>> tran_output = entry2.getValue();
+                    tran_output.retainAll(states_that_lead_to_accpetance);
+                    if(tran_output.size() == 0)
+                        iter3.remove();
+                }
+                if(entry.getValue().size() == 0)
+                    iter2.remove();
+            }
+
+            System.out.println(self_product);
+            for(Pair<Set<StateCore>> state : self_product.getTrans().keySet()){
+                if(state.identical()) {
+                    Map<Alphabet, Set<Pair<Set<StateCore>>>> state_map = self_product.getTrans().get(state);
+                    for (Alphabet letter : state_map.keySet()) {
+                        Set<Pair<Set<StateCore>>> state_letter_set = state_map.get(letter);
+                        for (Pair<Set<StateCore>> state2 : state_letter_set) {
+                            if (!state2.identical()) {
+                                ambiguous = true;
+                                Set<StateCore> l = state.left;
+                                for (StateCore AFAState : l) {
+                                    Set<Set<StateCore>> afa_state_letter_set = this.getTrans().get(AFAState).get(letter);
+                                    for (Set<StateCore> x : afa_state_letter_set) {
+                                        for (Set<StateCore> y : afa_state_letter_set) {
+                                            if (x != y && state2.left.containsAll(x) && state2.right.containsAll(y)) {
+                                                state_found = true;
+                                                afa_state_letter_set.remove(y);
+                                                for(StateCore p : x){
+                                                    Set<StateCore> new_states_set = new HashSet<>();
+                                                    new_states_set.addAll(y);
+                                                    new_states_set.add(comAut_to_Aut.get(p));
+                                                    afa_state_letter_set.add(new_states_set);
+                                                }
+                                                break;
+                                            }
+                                        }
+                                        if(state_found) break;
+                                    }
+                                    if(state_found) break;
+                                }
+                                break;
+                            }
+                        }
+                        if (ambiguous) break;
+                    }
+                    if (ambiguous) break;
+                }
+            }
+        }
+        System.out.println(comAut_to_Aut);
+    }
+
     public NFA forwardAlternationRemoval(){
 
         Set<Set<StateCore>> init_states = new HashSet<>(Arrays.asList(getInit_states()));
         Set<Alphabet> alphabet = getAlphabet();
-        Map<Set<StateCore>, Map<Alphabet, Set<Set<StateCore>>>> trans_map = new HashMap<>();
 
         ExpandFunction<Set<StateCore>, Alphabet, Map<StateCore, Map<Alphabet, Set<Set<StateCore>>>>, Set<Set<StateCore>>> AFAtoNFAExpand = (state, letter, in_tran) -> {
             Set<Set<StateCore>> conTranFunc = configTranFunction(state, letter, in_tran);
