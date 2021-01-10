@@ -191,4 +191,31 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
         return A_out;
     }
 
+    public NFA self_product(){
+        Set<StateCore> input_init_states = getInit_states();
+        Set<Pair<StateCore>> out_init_states = new HashSet<>();
+        for(StateCore s : input_init_states){
+            for(StateCore s2 : input_init_states){
+                out_init_states.add(new Pair<>(s, s2));
+            }
+        }
+
+        ExpandFunction<Pair<StateCore>, Alphabet, Map<StateCore, Map<Alphabet, Set<StateCore>>>, Set<Pair<StateCore>>> expand_product = (state, letter, inputTrans) -> {
+            Set<Pair<StateCore>> out_states = new HashSet<>();
+            StateCore left = state.getLeft();
+            StateCore right = state.getRight();
+            if(inputTrans.get(left) == null || inputTrans.get(left).get(letter) == null)
+                return null;
+            Set<StateCore> left_tran = inputTrans.get(left).get(letter);
+            if(inputTrans.get(right) == null || inputTrans.get(right).get(letter) == null)
+                return null;
+            Set<StateCore> right_tran = inputTrans.get(right).get(letter);
+            for(StateCore s1 : left_tran){
+                for(StateCore s2 : right_tran){
+                    out_states.add(new Pair<>(s1, s2));
+                }
+            }
+            return out_states;
+        };
+
 }
