@@ -46,11 +46,13 @@ public class Tests {
         AFA x = new AFA(init_states, alphabet, acc_states, trans);
 
         x.disambiguateByComplement();
-
+//        System.out.println(x);
+        x.trim();
         System.out.println(x);
-        System.out.println(x.complement);
-
-//        NFA y = x.reverseDeterminize();
-//        System.out.println(y);
+//        System.out.println(x.complement);
+        System.out.println(x.forwardAlternationRemoval());
+        NFA y = x.reverseDeterminize();
+        y.trim();
+        System.out.println(y);
     }
 }
