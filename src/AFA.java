@@ -569,4 +569,84 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         }
         return output;
     }
+
+    public Set<StateCore> get_states_that_can_lead_to_acceptance(){
+        Set<StateCore> states_accessible_from_initial_states = new HashSet<>(get_reachable_states());
+
+        Map<StateCore, Map<Alphabet, Set<StateCore>>> trans_reverse = new HashMap<>();
+        for(StateCore s : getTrans().keySet()){
+            for(Alphabet letter : getTrans().get(s).keySet()){
+                    Set<Set<StateCore>> set_of_sets_of_states = getTrans().get(s).get(letter);
+                for(Set<StateCore> s2 : set_of_sets_of_states){
+                    for(StateCore s3 : s2){
+                        Map<Alphabet, Set<StateCore>> current_state_map = trans_reverse.get(s3);
+                        if(current_state_map == null){
+                            current_state_map = new HashMap<>();
+                            trans_reverse.put(s3, current_state_map);
+                        }
+                        Set<StateCore> current_state_letter_set = current_state_map.get(letter);
+                        if(current_state_letter_set == null){
+                            current_state_letter_set = new HashSet<>();
+                            current_state_map.put(letter, current_state_letter_set);
+                        }
+                        current_state_letter_set.add(s);
+                    }
+                }
+            }
+        }
+
+        Set<StateCore> states_accessible_from_acc_states = new HashSet<>();
+        Queue<StateCore> queue2 = new LinkedList<>(getAcc_states());
+        while (!queue2.isEmpty()){
+            StateCore head = queue2.remove();
+            if(states_accessible_from_acc_states.contains(head))
+                continue;
+            states_accessible_from_acc_states.add(head);
+            Map<Alphabet, Set<StateCore>> state_map = trans_reverse.get(head);
+            if(state_map != null){
+                for(Alphabet letter : state_map.keySet()){
+                    queue2.addAll(state_map.get(letter));
+                }
+            }
+        }
+
+        states_accessible_from_initial_states.retainAll(states_accessible_from_acc_states);
+        return states_accessible_from_initial_states;
+    }
+
+    public void trim(){
+        Set<StateCore> states_that_lead_to_accpetance = this.get_states_that_can_lead_to_acceptance();
+        Iterator<StateCore> iter = this.getInit_states().iterator();
+        while(iter.hasNext()){
+            if(!states_that_lead_to_accpetance.contains(iter.next()))
+                iter.remove();
+        }
+
+        Iterator<Map.Entry<StateCore, Map<Alphabet, Set<Set<StateCore>>>>> iter2 = this.getTrans().entrySet().iterator();
+        while(iter2.hasNext()){
+            Map.Entry<StateCore, Map<Alphabet, Set<Set<StateCore>>>> entry = iter2.next();
+            StateCore state = entry.getKey();
+            if(!states_that_lead_to_accpetance.contains(state)) {
+                iter2.remove();
+                continue;
+            }
+
+            Iterator<Map.Entry<Alphabet, Set<Set<StateCore>>>> iter3 = entry.getValue().entrySet().iterator();
+            while(iter3.hasNext()){
+                Map.Entry<Alphabet, Set<Set<StateCore>>> entry2 = iter3.next();
+                Set<Set<StateCore>> tran_output = entry2.getValue();
+                Iterator<Set<StateCore>> iter4 = tran_output.iterator();
+                while(iter4.hasNext()){
+                    Set<StateCore> set = iter4.next();
+                    set.retainAll(states_that_lead_to_accpetance);
+                    if(set.size() == 0)
+                        iter4.remove();
+                }
+                if(entry2.getValue().size() == 0)
+                    iter3.remove();
+            }
+            if(entry.getValue().size() == 0)
+                iter2.remove();
+        }
+    }
 }
