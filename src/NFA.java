@@ -267,5 +267,35 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
         states_accessible_from_initial_states.retainAll(states_accessible_from_acc_states);
         return states_accessible_from_initial_states;
     }
+
+    public void trim(){
+        Set<StateCore> states_that_lead_to_accpetance = this.get_states_that_can_lead_to_acceptance();
+        Iterator<StateCore> iter = this.getInit_states().iterator();
+        while(iter.hasNext()){
+            if(!states_that_lead_to_accpetance.contains(iter.next()))
+                iter.remove();
+        }
+
+        Iterator<Map.Entry<StateCore, Map<Alphabet, Set<StateCore>>>> iter2 = this.getTrans().entrySet().iterator();
+        while(iter2.hasNext()){
+            Map.Entry<StateCore, Map<Alphabet, Set<StateCore>>> entry = iter2.next();
+            StateCore state = entry.getKey();
+            if(!states_that_lead_to_accpetance.contains(state)) {
+                iter2.remove();
+                continue;
+            }
+
+            Iterator<Map.Entry<Alphabet, Set<StateCore>>> iter3 = entry.getValue().entrySet().iterator();
+            while(iter3.hasNext()){
+                Map.Entry<Alphabet, Set<StateCore>> entry2 = iter3.next();
+                Set<StateCore> tran_output = entry2.getValue();
+                tran_output.retainAll(states_that_lead_to_accpetance);
+                if(tran_output.size() == 0)
+                    iter3.remove();
+            }
+            if(entry.getValue().size() == 0)
+                iter2.remove();
+        }
+    }
     
 }
