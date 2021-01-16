@@ -533,6 +533,9 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
     public static <StateCore, Alphabet> Set<Set<StateCore>> configTranFunction(Set<StateCore> setOfStates, Alphabet letter, Map<StateCore, Map<Alphabet, Set<Set<StateCore>>>> trans) {
         List<List<Set<StateCore>>> listOfLists = new ArrayList<>();
         for(StateCore s: setOfStates){
+            Map<Alphabet, Set<Set<StateCore>>> state_map = trans.get(s);
+            if(state_map == null)
+                return null;
             Set<Set<StateCore>> state_letter_set = trans.get(s).get(letter);
             if(state_letter_set == null)
                 return null;
