@@ -383,7 +383,7 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         //merge the automata and its complement
         Set<StateCore> comStateSpace = this.complement.getState_space();
         for(StateCore s : comStateSpace) {
-            StateCore new_state = generateUniqueStateCore();
+            StateCore new_state = createANewState();
             comAut_to_Aut.put(s, new_state);
             comAut_to_Aut.put(s, new_state);
         }

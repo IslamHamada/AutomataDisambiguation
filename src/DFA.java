@@ -89,22 +89,53 @@ public class DFA<StateCore, Alphabet, InputTranKey, InputTranValue> extends Auto
             StateCore state = queue.remove();
             reachable.add(state);
             Map<Alphabet, StateCore> state_map = trans.get(state);
-            for(Alphabet letter : state_map.keySet()){
-                StateCore state2 = state_map.get(letter);
-                if(!reachable.contains(state2))
-                    queue.add(state2);
+            if(state_map != null) {
+                for(Alphabet letter : state_map.keySet()) {
+                    StateCore state2 = state_map.get(letter);
+                    if (!reachable.contains(state2))
+                        queue.add(state2);
+                }
             }
         }
         return reachable;
     }
 
+    /**
+     * completes the automata by adding a dead state, if missing, and proper transitions to it
+     */
     @Override
     public void complete_aut() {
+        Set<StateCore> reachable = get_reachable_states();
+        StateCore deadState = createANewState();
+        Map<Alphabet, StateCore> deadState_map = new HashMap<>();
+        for(Alphabet letter : getAlphabet()){
+            deadState_map.put(letter, deadState);
+        }
 
-    }
+        boolean already_exists = true;
 
-    @Override
-    public void expandBackwards() {
+        for(StateCore s : reachable){
+            Map<Alphabet, StateCore> state_map = trans.get(s);
+            if(state_map == null){
+                already_exists = false;
+                state_map = new HashMap<>();
+                trans.put(s, state_map);
+            }
+            for(Alphabet letter : getAlphabet()){
+                StateCore state_letter_state = trans.get(s).get(letter);
+                if(state_letter_state == null){
+                    already_exists = false;
+                    state_letter_state = deadState;
+                    trans.get(s).put(letter, state_letter_state);
+                }
+            }
+        }
 
+        if(!already_exists){
+            trans.put(deadState, deadState_map);
+            getState_space().add(deadState);
+        } else {
+            getState_space().remove(deadState);
+        }
     }
 }

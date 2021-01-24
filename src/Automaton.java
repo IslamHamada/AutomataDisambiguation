@@ -150,10 +150,15 @@ public abstract class Automaton<StateCore, Alphabet, TransitionOutput, InputStat
 
     public abstract void complete_aut();
 
-    public StateCore generateUniqueStateCore(){
+    /**
+     * @return create a new state with a unique StateCore and adds it to the automaton
+     */
+    public StateCore createANewState(){
         Set<StateCore> state_space = getState_space();
         StateCore state = state_space.iterator().next();
         String class_name = state.getClass().getSimpleName();
+
+        //in case the state core is an integer
         if(class_name.equals("Integer")){
             int max = 0;
             for(StateCore s : state_space){

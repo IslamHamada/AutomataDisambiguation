@@ -150,7 +150,38 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
 
     @Override
     public void complete_aut() {
+        Set<StateCore> reachable = get_reachable_states();
+        StateCore deadState = createANewState();
+        Map<Alphabet, Set<StateCore>> deadState_map = new HashMap<>();
+        for(Alphabet letter : getAlphabet()){
+            deadState_map.put(letter, new HashSet<>(Arrays.asList(deadState)));
+        }
 
+        boolean already_exists = true;
+
+        for(StateCore s : reachable){
+            Map<Alphabet, Set<StateCore>> state_map = trans.get(s);
+            if(state_map == null){
+                already_exists = false;
+                state_map = new HashMap<>();
+                trans.put(s, state_map);
+            }
+            for(Alphabet letter : getAlphabet()){
+                Set<StateCore> state_letter_state = trans.get(s).get(letter);
+                if(state_letter_state == null){
+                    already_exists = false;
+                    state_letter_state = new HashSet<>(Arrays.asList(deadState));
+                    trans.get(s).put(letter, state_letter_state);
+                }
+            }
+        }
+
+        if(!already_exists){
+            trans.put(deadState, deadState_map);
+            getState_space().add(deadState);
+        } else {
+            getState_space().remove(deadState);
+        }
     }
 
     public DFA determinize(){
