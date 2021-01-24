@@ -12,10 +12,14 @@ public class DFA<StateCore, Alphabet, InputTranKey, InputTranValue> extends Auto
         return init_state;
     }
 
+    @Override
+    public Set<StateCore> getInit_states(){
+        return new HashSet<>(Arrays.asList(init_state));
+    }
+
     public void setInit_state(StateCore init_state) {
         this.init_state = init_state;
     }
-
 
     @Override
     public String toString(){
@@ -23,6 +27,9 @@ public class DFA<StateCore, Alphabet, InputTranKey, InputTranValue> extends Auto
                 "init_states=" + init_state + super.toString();
     }
 
+    /**
+     * @return returns the state space of the automaton
+     */
     @Override
     protected Set<StateCore> calcStateSpace() {
         Set<StateCore> state_space = new HashSet<>();
@@ -42,21 +49,11 @@ public class DFA<StateCore, Alphabet, InputTranKey, InputTranValue> extends Auto
         return false;
     }
 
-    @Override
-    public void expandForward() {
-        Queue<StateCore> queue = new LinkedList<StateCore>();
-        Set<StateCore> expanded = new HashSet<StateCore>();
-        queue.add(init_state);
-        while(!queue.isEmpty()){
-            StateCore s = queue.remove();
-            if(!expanded.contains(s)) {
-                queue.addAll(expandForward(s));
-                isAcceptState(s);
-            }
-            expanded.add(s);
-        }
-    }
-
+    /**
+     * a function to expand a state forward
+     * @param s a state
+     * @return the states resulting from expansion
+     */
     @Override
     public Queue<StateCore> expandForward(StateCore s){
         Queue<StateCore> queue = new LinkedList<>();

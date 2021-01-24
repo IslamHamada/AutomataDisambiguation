@@ -40,7 +40,7 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
         return state_space;
     }
 
-
+    @Override
     public Set<StateCore> getInit_states() {
         return init_states;
     }
@@ -58,21 +58,6 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
     }
 
     @Override
-    public void expandForward() {
-        Queue<StateCore> queue = new LinkedList<StateCore>();
-        Set<StateCore> expanded = new HashSet<StateCore>();
-        queue.addAll(getInit_states());
-        while(!queue.isEmpty()){
-            StateCore s = queue.remove();
-            if(!expanded.contains(s)) {
-                queue.addAll(expandForward(s));
-                isAcceptState(s);
-            }
-            expanded.add(s);
-        }
-    }
-
-    @Override
     public Queue<StateCore> expandForward(StateCore s) {
         Queue<StateCore> queue = new LinkedList<>();
         HashMap<Alphabet, Set<StateCore>> state_map = new HashMap<>();
@@ -86,21 +71,6 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
         if(!state_map.isEmpty())
             getTrans().put(s,state_map);
         return queue;
-    }
-
-    @Override
-    public void expandBackwards() {
-        Queue<StateCore> queue = new LinkedList<StateCore>();
-        Set<StateCore> expanded = new HashSet<StateCore>();
-        queue.addAll(getAcc_states());
-        while(!queue.isEmpty()){
-            StateCore s = queue.remove();
-            if(!expanded.contains(s)) {
-                queue.addAll(expandBackwards(s));
-                isInitialState(s);
-            }
-            expanded.add(s);
-        }
     }
 
     public Queue<StateCore> expandBackwards(StateCore s){

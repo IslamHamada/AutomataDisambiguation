@@ -124,9 +124,41 @@ public abstract class Automaton<StateCore, Alphabet, TransitionOutput, InputStat
 
     public abstract boolean isInitialState(StateCore s);
 
-    // TODO: might implement these two functions here instead of implementing them in the subclasses
-    public abstract void expandForward();
-    public abstract void expandBackwards();
+    public abstract Set<StateCore> getInit_states();
+
+    /**
+     * a function to expand the automaton forward
+     */
+    public void expandForward(){
+        Queue<StateCore> queue = new LinkedList<StateCore>();
+        Set<StateCore> expanded = new HashSet<StateCore>();
+        queue.addAll(getInit_states());
+        while(!queue.isEmpty()){
+            StateCore s = queue.remove();
+            if(!expanded.contains(s)) {
+                queue.addAll(expandForward(s));
+                isAcceptState(s);
+            }
+            expanded.add(s);
+        }
+    }
+
+    /**
+     * a function to expand the automaton backwards
+     */
+    public void expandBackwards(){
+        Queue<StateCore> queue = new LinkedList<StateCore>();
+        Set<StateCore> expanded = new HashSet<StateCore>();
+        queue.addAll(getAcc_states());
+        while(!queue.isEmpty()){
+            StateCore s = queue.remove();
+            if(!expanded.contains(s)) {
+                queue.addAll(expandBackwards(s));
+                isInitialState(s);
+            }
+            expanded.add(s);
+        }
+    }
     public abstract Queue<StateCore> expandForward(StateCore s);
     public abstract Queue<StateCore> expandBackwards(StateCore s);
 

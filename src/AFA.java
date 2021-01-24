@@ -10,6 +10,7 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         this.init_states = init_states;
     }
 
+    @Override
     public Set<StateCore> getInit_states() {
         return init_states;
     }
@@ -49,45 +50,48 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         return reachable;
     }
 
+    /**
+     * completes the automata by adding a dead state, if missing, and proper transitions to it
+     */
     @Override
     public void complete_aut() {
         Set<StateCore> reachable = get_reachable_states();
-        StateCore deadState = generateUniqueStateCore();
+        StateCore deadState = createANewState();
         Map<Alphabet, Set<Set<StateCore>>> deadState_map = new HashMap<>();
         for(Alphabet letter : getAlphabet()){
             deadState_map.put(letter, new HashSet<>(Arrays.asList(new HashSet<>(Arrays.asList(deadState)))));
         }
-        trans.put(deadState, deadState_map);
-        getState_space().add(deadState);
+
+        boolean already_exists = true;
 
         for(StateCore s : reachable){
             Map<Alphabet, Set<Set<StateCore>>> state_map = trans.get(s);
             if(state_map == null){
+                already_exists = false;
                 state_map = new HashMap<>();
                 trans.put(s, state_map);
             }
             for(Alphabet letter : getAlphabet()){
                 Set<Set<StateCore>> state_letter_set = trans.get(s).get(letter);
                 if(state_letter_set == null){
+                    already_exists = false;
                     state_letter_set = new HashSet<>(Arrays.asList(new HashSet<>(Arrays.asList(deadState))));
                     trans.get(s).put(letter, state_letter_set);
                 }
             }
+        }
+
+        if(!already_exists){
+            trans.put(deadState, deadState_map);
+            getState_space().add(deadState);
+        } else {
+            getState_space().remove(deadState);
         }
     }
 
     @Override
     public boolean isInitialState(StateCore s) {
         return false;
-    }
-
-    @Override
-    public void expandForward() {
-    }
-
-    @Override
-    public void expandBackwards() {
-
     }
 
     @Override
