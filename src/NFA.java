@@ -95,6 +95,9 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
         return queue;
     }
 
+    /**
+     * @return all reachable states
+     */
     @Override
     public Set<StateCore> get_reachable_states() {
         Set<StateCore> reachable = new HashSet<>();

@@ -416,16 +416,16 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         boolean ambiguous = true;
         boolean state_found = false;
         while(ambiguous){
-            System.out.println("================================================");
-            System.out.println(comAut_to_Aut);
-            System.out.println(this);
+//            System.out.println("================================================");
+//            System.out.println(comAut_to_Aut);
+//            System.out.println(this);
 
             state_found = false;
             ambiguous = false;
             NFA<Set<StateCore>, Alphabet, StateCore, Set<StateCore>> nfa = forwardAlternationRemoval();
-            System.out.println(nfa);
+//            System.out.println(nfa);
             NFA<Pair<Set<StateCore>>, Alphabet, Set<StateCore>, Set<Set<StateCore>>> self_product = nfa.self_product();
-            System.out.println(self_product);
+//            System.out.println(self_product);
             Set<Pair<Set<StateCore>>> states_that_lead_to_accpetance = self_product.get_states_that_can_lead_to_acceptance();
 
             //remove states that accept the empty language (Trim)
@@ -456,7 +456,7 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
                     iter2.remove();
             }
 
-            System.out.println(self_product);
+//            System.out.println(self_product);
             for(Pair<Set<StateCore>> state : self_product.getTrans().keySet()){
                 if(state.identical()) {
                     Map<Alphabet, Set<Pair<Set<StateCore>>>> state_map = self_product.getTrans().get(state);
@@ -495,7 +495,7 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
                 }
             }
         }
-        System.out.println(comAut_to_Aut);
+//        System.out.println(comAut_to_Aut);
     }
 
     public NFA forwardAlternationRemoval(){
@@ -649,8 +649,9 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
                 if(entry2.getValue().size() == 0)
                     iter3.remove();
             }
-            if(entry.getValue().size() == 0)
+            if(entry.getValue().size() == 0) {
                 iter2.remove();
+            }
         }
     }
 }
