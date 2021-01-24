@@ -164,10 +164,18 @@ public abstract class Automaton<StateCore, Alphabet, TransitionOutput, InputStat
 
     @Override
     public String toString() {
-         return "\n, alphabet=" + alphabet +
+        String output = "\n, alphabet=" + alphabet +
                 "\n, acc_states=" + acc_states +
-                "\n, trans=" + trans +
-                "\n}";
+                "\n, trans=\n";
+        Iterator<Map.Entry<StateCore, Map<Alphabet, TransitionOutput>>>iter1 = trans.entrySet().iterator();
+        while(iter1.hasNext()){
+            Map.Entry<StateCore, Map<Alphabet, TransitionOutput>> entry = iter1.next();
+            output += "\t\t" + entry;
+            if(iter1.hasNext())
+                output += "\n";
+        }
+        output += "\n}";
+        return output;
     }
 
     public Map<InputStateCore, Map<Alphabet, InputTranOutput>> getIn_trans() {
