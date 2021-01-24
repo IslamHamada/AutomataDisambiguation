@@ -285,7 +285,7 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         StateCore first = iter.next();
         Map<Alphabet, Set<Set<StateCore>>> first_trans = getTrans().get(first);
 
-        StateCore new_state = generateUniqueStateCore();
+        StateCore new_state = createANewState();
         Map<Alphabet, Set<Set<StateCore>>> new_state_map = new HashMap<>();
 
         //copy the transitions of the first state of the disjunction to the new state
