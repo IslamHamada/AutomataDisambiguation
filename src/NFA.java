@@ -1,20 +1,51 @@
 import java.util.*;
 
+/**
+ * a non-deterministic finite automaton class
+ * @param <StateCore>
+ * @param <Alphabet>
+ * @param <InputStateCore> the state core of the input automaton, if provided
+ * @param <InputTranOutput> the output of the input transition function of the input automaton, if provided
+ */
 public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends Automaton<StateCore, Alphabet, Set<StateCore>, InputStateCore, InputTranOutput>{
 
     Set<StateCore> init_states;
 
+    /**
+     * a constructor to build an NFA given the initial states, alphabet, acceptance states, and the transition function
+     * @param init_states
+     * @param alphabet
+     * @param acc_states
+     * @param trans
+     */
     public NFA(Set<StateCore> init_states, Set<Alphabet> alphabet, Set<StateCore> acc_states, Map<StateCore, Map<Alphabet, Set<StateCore>>> trans) {
         super(alphabet, acc_states, trans);
         this.init_states = init_states;
     }
 
-
+    /**
+     * a constructor to build an NFA given another input automaton, i.e., acceptance states, input transitions, backwards expansion function and a function to check whether a state is an initial state
+     * @param alphabet
+     * @param acc_states
+     * @param expandBackwardsFunction
+     * @param isInitialStateFunction
+     * @param in_init_states
+     * @param in_trans
+     */
     public NFA(Set<Alphabet> alphabet, Set<StateCore> acc_states, ExpandFunction<StateCore, Alphabet, Map<InputStateCore, Map<Alphabet, InputTranOutput>>, StateCore> expandBackwardsFunction, HasPropertyFunction<InputStateCore, StateCore> isInitialStateFunction, Set<InputStateCore> in_init_states, Map<InputStateCore, Map<Alphabet, InputTranOutput>> in_trans) {
         super(alphabet, acc_states, expandBackwardsFunction, isInitialStateFunction, in_init_states, in_trans);
         init_states = new HashSet<>();
     }
 
+    /**
+     * a constructor to build an NFA given another input automaton, i.e., initial states, input transitions, an expansion function and a function to check whether a state is an acceptance state
+     * @param init_states
+     * @param alphabet
+     * @param expandForwardFunction
+     * @param isAcceptStateFunction
+     * @param in_trans
+     * @param in_acc_states
+     */
     public NFA(Set<StateCore> init_states, Set<Alphabet> alphabet, ExpandFunction<StateCore, Alphabet, Map<InputStateCore, Map<Alphabet, InputTranOutput>>, Set<StateCore>> expandForwardFunction, HasPropertyFunction<InputStateCore, StateCore> isAcceptStateFunction, Map<InputStateCore, Map<Alphabet, InputTranOutput>> in_trans, Set<InputStateCore> in_acc_states) {
         super(alphabet, expandForwardFunction, isAcceptStateFunction, in_trans, in_acc_states);
         this.init_states = init_states;
@@ -73,6 +104,11 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
         return queue;
     }
 
+    /**
+     * a function that expands a state backwards
+     * @param s a state
+     * @return a queue of states that results from expansion
+     */
     public Queue<StateCore> expandBackwards(StateCore s){
         Queue<StateCore> queue = new LinkedList<>();
         for(Alphabet c : getAlphabet()) {
@@ -157,6 +193,10 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
         }
     }
 
+    /**
+     * a function that determinizes the NFA
+     * @return a DFA
+     */
     public DFA determinize(){
         Set<StateCore> init_state = getInit_states();
         Set<Alphabet> alphabet = getAlphabet();
@@ -194,6 +234,10 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
         return A_out;
     }
 
+    /**
+     *
+     * @return the self-product of the NFA as another NFA
+     */
     public NFA self_product(){
         Set<StateCore> input_init_states = getInit_states();
         Set<Pair<StateCore>> out_init_states = new HashSet<>();
@@ -231,6 +275,11 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
         product.expandForward();
         return product;
     }
+
+    /**
+     * a function to calculates which states can lead to accpetance, i.e., states that can be a part of any acceptance run
+     * @return a set of states that can lead to acceptance
+     */
     public Set<StateCore> get_states_that_can_lead_to_acceptance(){
         Set<StateCore> states_accessible_from_initial_states = new HashSet<>(get_reachable_states());
 
@@ -272,6 +321,9 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
         return states_accessible_from_initial_states;
     }
 
+    /**
+     * a function that removes states that can never lead to an acceptance state
+     */
     public void trim(){
         Set<StateCore> states_that_lead_to_accpetance = this.get_states_that_can_lead_to_acceptance();
         Iterator<StateCore> iter = this.getInit_states().iterator();

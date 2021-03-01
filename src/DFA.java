@@ -11,7 +11,7 @@ public class DFA<StateCore, Alphabet, InputTranKey, InputTranValue> extends Auto
     StateCore init_state;
 
     /**
-     * a constructor to build a finite automaton give another input automaton, expansion function and a function to check whether a state is an acceptance state
+     * a constructor to build a DFA given another input automaton, i.e., initial states, input transitions, an expansion function and a function to check whether a state is an acceptance state
      * @param init_state
      * @param alphabet
      * @param expandFunction a function to expand the states forward

@@ -1,10 +1,24 @@
 import java.util.*;
 
+/**
+ * a class for alternating finite automata
+ * @param <StateCore>
+ * @param <Alphabet>
+ * @param <InputStateCore> the state core of the input automaton, if provided
+ * @param <InputTransitionOutput> the output of the input transition function of the input automaton, if provided
+ */
 public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         > extends Automaton<StateCore, Alphabet, Set<Set<StateCore>>, InputStateCore, InputTransitionOutput>{
     Set<StateCore> init_states;
-    AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput> complement;
+    AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput> complement; // a variable to store the complement of the automaton which is another AFA
 
+    /**
+     * a constructor to build an AFA given the initial states, alphabet, acceptance states, and the transition function
+     * @param init_states
+     * @param alphabet
+     * @param acc_states
+     * @param trans
+     */
     public AFA(Set<StateCore> init_states, Set<Alphabet> alphabet, Set<StateCore> acc_states, Map<StateCore, Map<Alphabet, Set<Set<StateCore>>>> trans) {
         super(alphabet, acc_states, trans);
         this.init_states = init_states;
@@ -92,18 +106,22 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
     @Override
     public boolean isInitialState(StateCore s) {
         return false;
-    }
+    } // this function isn't needed so far
 
     @Override
     public Queue<StateCore> expandForward(StateCore s) {
         return null;
-    }
+    } // this function isn't needed so far
 
     @Override
     public Queue<StateCore> expandBackwards(StateCore s) {
         return null;
-    }
+    } // this function isn't needed so far
 
+    /**
+     * a function that applies the algorithm reverse determinization
+     * @return an NFA
+     */
     public NFA reverseDeterminize(){
         Set<Set<StateCore>> acc_states = new HashSet<>();
         Set<StateCore> acc_state = new HashSet<>(getAcc_states());
@@ -275,6 +293,9 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
 //        setInit_states(new_initial_state);
 //    }
 
+    /**
+     * a function that coverts the automaton to one that has a single initial state
+     */
     public void convertToSingleInitialState(){
         if(getInit_states().size() == 1)
             return;
@@ -322,6 +343,10 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         setInit_states(new_initial_state);
     }
 
+    /**
+     * a function that calculates the complement of an automaton
+     * @return an AFA that represents the complement automaton
+     */
     public AFA complement(){
         convertToSingleInitialState();
         complete_aut();
@@ -351,6 +376,11 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         return output;
     }
 
+    /**
+     * a function that returns a list of all the possible selections done over a list of lists, where a selection of a list is just a single member of it
+     * @param listOfLists a list of lists
+     * @return a list of all the possible selections
+     */
     public List<Set<StateCore>> allSelections(List<List<StateCore>> listOfLists) {
         int numOfLists = listOfLists.size();
         int[] indices = new int[numOfLists];
@@ -379,6 +409,9 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         return output;
     }
 
+    /**
+     * a function that disambiguates the automaton using its complement automaton
+     */
     public void disambiguateByComplement(){
         Map<StateCore, StateCore> comAut_to_Aut = new HashMap<>();
         if(this.complement == null)
@@ -498,6 +531,10 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
 //        System.out.println(comAut_to_Aut);
     }
 
+    /**
+     * a function that applies the forward alternation removal algorithm
+     * @return an NFA
+     */
     public NFA forwardAlternationRemoval(){
 
         Set<Set<StateCore>> init_states = new HashSet<>(Arrays.asList(getInit_states()));
@@ -534,6 +571,15 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         return A_out;
     }
 
+    /**
+     * it represents the configuration transition function
+     * @param setOfStates
+     * @param letter a letter of the alphabet
+     * @param trans the transition function
+     * @param <StateCore>
+     * @param <Alphabet>
+     * @return the output that the configuration transition function would return given a set of states and a letter and regular transition function
+     */
     public static <StateCore, Alphabet> Set<Set<StateCore>> configTranFunction(Set<StateCore> setOfStates, Alphabet letter, Map<StateCore, Map<Alphabet, Set<Set<StateCore>>>> trans) {
         List<List<Set<StateCore>>> listOfLists = new ArrayList<>();
         for(StateCore s: setOfStates){
@@ -574,6 +620,10 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         return output;
     }
 
+    /**
+     * the function returns the (state space - some states that obviously can't lead to an acceptance state)
+     * @return a set of states. That set may contain states that can still lead to an acceptance but are included because the function does a simplistic test.
+     */
     public Set<StateCore> get_states_that_can_lead_to_acceptance(){
         Set<StateCore> states_accessible_from_initial_states = new HashSet<>(get_reachable_states());
 
@@ -618,6 +668,9 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
         return states_accessible_from_initial_states;
     }
 
+    /**
+     * removes some states that obviously can never lead an acceptance.
+     */
     public void trim(){
         Set<StateCore> states_that_lead_to_accpetance = this.get_states_that_can_lead_to_acceptance();
         Iterator<StateCore> iter = this.getInit_states().iterator();

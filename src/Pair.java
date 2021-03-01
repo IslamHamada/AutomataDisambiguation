@@ -1,5 +1,9 @@
 import java.util.Objects;
 
+/**
+ * a class for pairs
+ * @param <Type> the type of the elements of the pair
+ */
 public class Pair<Type> {
     Type left;
     Type right;
