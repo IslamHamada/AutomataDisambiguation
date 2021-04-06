@@ -624,6 +624,7 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
      * the function returns the (state space - some states that obviously can't lead to an acceptance state)
      * @return a set of states. That set may contain states that can still lead to an acceptance but are included because the function does a simplistic test.
      */
+    @Override
     public Set<StateCore> get_states_that_can_lead_to_acceptance(){
         Set<StateCore> states_accessible_from_initial_states = new HashSet<>(get_reachable_states());
 
@@ -671,6 +672,7 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
     /**
      * removes some states that obviously can never lead an acceptance.
      */
+    @Override
     public void trim(){
         Set<StateCore> states_that_lead_to_accpetance = this.get_states_that_can_lead_to_acceptance();
         Iterator<StateCore> iter = this.getInit_states().iterator();

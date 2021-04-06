@@ -280,6 +280,7 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
      * a function to calculates which states can lead to accpetance, i.e., states that can be a part of any acceptance run
      * @return a set of states that can lead to acceptance
      */
+    @Override
     public Set<StateCore> get_states_that_can_lead_to_acceptance(){
         Set<StateCore> states_accessible_from_initial_states = new HashSet<>(get_reachable_states());
 
@@ -324,6 +325,7 @@ public class NFA <StateCore, Alphabet, InputStateCore, InputTranOutput> extends 
     /**
      * a function that removes states that can never lead to an acceptance state
      */
+    @Override
     public void trim(){
         Set<StateCore> states_that_lead_to_accpetance = this.get_states_that_can_lead_to_acceptance();
         Iterator<StateCore> iter = this.getInit_states().iterator();
