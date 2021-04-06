@@ -4,10 +4,10 @@ import java.util.*;
  * a deterministic finite automaton class
  * @param <StateCore>
  * @param <Alphabet>
- * @param <InputTranKey> the transition key type of the transition map of the input automaton, if provided
- * @param <InputTranValue> the transition value type of the transition map of the input automaton, if provided
+ * @param <InputStateCore> the transition key type of the transition map of the input automaton, if provided
+ * @param <InputTranOutput> the transition value type of the transition map of the input automaton, if provided
  */
-public class DFA<StateCore, Alphabet, InputTranKey, InputTranValue> extends Automaton<StateCore, Alphabet, StateCore, InputTranKey, InputTranValue>{
+public class DFA<StateCore, Alphabet, InputStateCore, InputTranOutput> extends Automaton<StateCore, Alphabet, StateCore, InputStateCore, InputTranOutput>{
     StateCore init_state;
 
     /**
@@ -19,7 +19,7 @@ public class DFA<StateCore, Alphabet, InputTranKey, InputTranValue> extends Auto
      * @param in_trans the input transitions of the input automaton
      * @param in_acc_states the acceptance states of the input automaton
      */
-    public DFA(StateCore init_state, Set<Alphabet> alphabet, ExpandFunction<StateCore, Alphabet, Map<InputTranKey, Map<Alphabet, InputTranValue>>, StateCore> expandFunction, HasPropertyFunction<InputTranKey, StateCore> isAcceptStateFunction, Map<InputTranKey, Map<Alphabet, InputTranValue>> in_trans, Set<InputTranKey> in_acc_states) {
+    public DFA(StateCore init_state, Set<Alphabet> alphabet, ExpandFunction<StateCore, Alphabet, Map<InputStateCore, Map<Alphabet, InputTranOutput>>, StateCore> expandFunction, HasPropertyFunction<InputStateCore, StateCore> isAcceptStateFunction, Map<InputStateCore, Map<Alphabet, InputTranOutput>> in_trans, Set<InputStateCore> in_acc_states) {
         super(alphabet, expandFunction, isAcceptStateFunction, in_trans, in_acc_states);
         this.init_state = init_state;
     }

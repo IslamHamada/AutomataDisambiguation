@@ -5,12 +5,12 @@ import java.util.*;
  * @param <StateCore>
  * @param <Alphabet>
  * @param <InputStateCore> the state core of the input automaton, if provided
- * @param <InputTransitionOutput> the output of the input transition function of the input automaton, if provided
+ * @param <InputTranOutput> the output of the input transition function of the input automaton, if provided
  */
-public class AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput
-        > extends Automaton<StateCore, Alphabet, Set<Set<StateCore>>, InputStateCore, InputTransitionOutput>{
+public class AFA<StateCore, Alphabet, InputStateCore, InputTranOutput
+        > extends Automaton<StateCore, Alphabet, Set<Set<StateCore>>, InputStateCore, InputTranOutput>{
     Set<StateCore> init_states;
-    AFA<StateCore, Alphabet, InputStateCore, InputTransitionOutput> complement; // a variable to store the complement of the automaton which is another AFA
+    AFA<StateCore, Alphabet, InputStateCore, InputTranOutput> complement; // a variable to store the complement of the automaton which is another AFA
 
     /**
      * a constructor to build an AFA given the initial states, alphabet, acceptance states, and the transition function
