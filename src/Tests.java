@@ -2,11 +2,47 @@ import java.util.*;
 
 public class Tests {
     public static void main(String[] args) {
-//        aut1();
-        aut2();
+        aut1();
+//        aut2();
     }
 
     private static void aut2() {
+        HashSet<Integer> init_states = new HashSet<>();
+        init_states.add(0);
+
+        Set<Character> alphabet = new HashSet<Character>(Arrays.asList('a','b'));
+
+        Set<Integer> acc_states = new HashSet<>();
+        acc_states.add(3);
+
+        Map<Integer, Map<Character, Set<Set<Integer>>>> trans = new HashMap<>();
+
+        Map<Character, Set<Set<Integer>>> s0_map = new HashMap<>();
+        Set<Integer> s0 = new HashSet<>(Arrays.asList(0));
+        Set<Integer> s1 = new HashSet<>(Arrays.asList(1));
+        Set<Integer> s2 = new HashSet<>(Arrays.asList(2));
+        Set<Integer> s3 = new HashSet<>(Arrays.asList(3));
+
+        s0_map.put('a', new HashSet<>(Arrays.asList(s0, s1)));
+        s0_map.put('b', new HashSet<>(Arrays.asList(s0)));
+
+        trans.put(0, s0_map);
+
+        Map<Character, Set<Set<Integer>>> s1_map = new HashMap<>();
+        s1_map.put('a', new HashSet<>(Arrays.asList(s2)));
+        s1_map.put('b', new HashSet<>(Arrays.asList(s2)));
+        trans.put(1, s1_map);
+
+        Map<Character, Set<Set<Integer>>> s2_map = new HashMap<>();
+        s2_map.put('a', new HashSet<>(Arrays.asList(s3)));
+        s2_map.put('b', new HashSet<>(Arrays.asList(s3)));
+        trans.put(2, s2_map);
+
+        AFA x = new AFA(init_states, alphabet, acc_states, trans);
+
+        x.disambiguateByComplement();
+        x.trim();
+        System.out.println(x);
     }
 
     public static void aut1() {
