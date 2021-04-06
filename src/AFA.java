@@ -334,8 +334,6 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTranOutput
             }
         }
 
-        //ToDo: remove the intermediate new states in initial_states2. some of them won't ever be mentioned while expanding
-
         getState_space().add(new_state);
         getTrans().put(new_state, new_state_map);
         Set<StateCore> new_initial_state = new HashSet<>();
@@ -352,24 +350,24 @@ public class AFA<StateCore, Alphabet, InputStateCore, InputTranOutput
         complete_aut();
 //        System.out.println(this);
 
-        Map<StateCore, Map<Alphabet, Set<Set<StateCore>>>> trans_map = new HashMap<>();
+        Map<StateCore, Map<Alphabet, Set<Set<StateCore>>>> comp_aut_trans_map = new HashMap<>();
 
         for(StateCore s : trans.keySet()){
-            Map<Alphabet, Set<Set<StateCore>>> state_map = new HashMap<>();
+            Map<Alphabet, Set<Set<StateCore>>> comp_state_map = new HashMap<>();
             for(Alphabet letter : trans.get(s).keySet()){
                 Set<Set<StateCore>> sets = trans.get(s).get(letter);
                 List<List<StateCore>> listOfLists = new ArrayList<>();
                 for(Set<StateCore> set : sets)
                     listOfLists.add(new ArrayList<>(set));
                 Set<Set<StateCore>> state_letter_set = new HashSet<>(allSelections(listOfLists));
-                state_map.put(letter, state_letter_set);
+                comp_state_map.put(letter, state_letter_set);
             }
-            trans_map.put(s, state_map);
+            comp_aut_trans_map.put(s, comp_state_map);
         }
 
         Set<StateCore> acc_states = new HashSet<>(getState_space());
         acc_states.removeAll(getAcc_states());
-        AFA output = new AFA(init_states, alphabet, acc_states, trans_map);
+        AFA output = new AFA(init_states, alphabet, acc_states, comp_aut_trans_map);
 
 //        Map<StateCore, StateCore> replace_state_cores;
         this.complement = output;
