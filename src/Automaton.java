@@ -296,4 +296,8 @@ public abstract class Automaton<StateCore, Alphabet, TransitionOutput, InputStat
         //ToDo: define how the new state core is generated for other types
         return null;
     }
+
+    public abstract void trim();
+
+    public abstract Set<StateCore> get_states_that_can_lead_to_acceptance();
 }
